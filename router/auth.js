@@ -21,15 +21,23 @@ router.post("/MernSignup", (req, res) => {
 	}
 	console.log(req.body);
 	User.findOne({ email: email })
-		.then(() => {
-			if(emailExist){
-			return res.json({ message: "user already exist." });}
-			else{
-
-
-
-				
+		.then((emailExist) => {
+			if (emailExist) {
+				return res.status(422).json({ message: "user already exist." });
 			}
+
+			const addUser = new User({ name, email, phone, work, passwd, cpasswd });
+
+			addUser
+				.save()
+				.than(() => {
+					res.status(201).json({ message: "user registered successfully." });
+					console.log("user registered successfully.");
+				})
+				.catch((error) => {
+					res.status(500).json({ message: "registration failed", error });
+					console.log("Registratin failed.", error);
+				});
 		})
 		.catch((error) => {
 			console.log(error);
