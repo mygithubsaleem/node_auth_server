@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 require("../Db/connection");
-const User = require("./Model/userSchema");
+const User = require("../Model/userSchema");
 
 // router.get("/", (req, res) => {
 // 	console.log("hello world from  mern signup page router/router/router...");
@@ -26,11 +26,10 @@ router.post("/MernSignup", (req, res) => {
 				return res.status(422).json({ message: "user already exist." });
 			}
 
-			const addUser = new User({ name, email, phone, work, passwd, cpasswd });
-
-			addUser
+			const adduser = new User({ name, email, phone, work, passwd, cpasswd });
+			adduser
 				.save()
-				.than(() => {
+				.then(() => {
 					res.status(201).json({ message: "user registered successfully." });
 					console.log("user registered successfully.");
 				})
@@ -43,17 +42,17 @@ router.post("/MernSignup", (req, res) => {
 			console.log(error);
 		});
 });
-router.post("./MernLogin", (req, res) => {
-	const { name, email, phone, work, passwd, cpasswd } = req.body;
-	if (!email || !passwd || !cpasswd) {
-		return res.json({ rmessage: "please fill the empty field. " });
-	}
-	User.findOne({ email: email })
-		.than()
-		.catch((error) => {
-			console.log(error);
-		});
-});
+// router.post("./MernLogin", (req, res) => {
+// 	const { name, email, phone, work, passwd, cpasswd } = req.body;
+// 	if (!email || !passwd || !cpasswd) {
+// 		return res.json({ rmessage: "please fill the empty field. " });
+// 	}
+// 	User.findOne({ email: email })
+// 		.than()
+// 		.catch((error) => {
+// 			console.log(error);
+// 		});
+// });
 //promise return method ends  here...
 
 module.exports = router;
