@@ -1,37 +1,34 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = express();
 dotenv.config({ path: "./config.env" });
-const DB = process.env.DATABASE;
-const PORT = process.PORT;
-mongoose
-	.connect(DB, {
-		useNewUrlParser: true,
-		// useCreateIndex: true,
-		useUniFiedTopology: true,
-		// useFindAndModify: false,
-	})
-	.then(() => {
-		console.log("connected");
-	})
-	.catch((error) => {
-		console.log("not connected due to error...", error);
-	});
-const middleware = (req, res, next) => {
-	console.log("hello  from middle ware...Mern App...");
-	next();
-};
+require("./Db/connection");
+app.use(express.json());
+//const User = require("./Model/userSchema");
+app.use(require("./Router/auth"));
+const PORT = process.env.PORT;
+
+// app.get("/", (req, res) => {
+// 	console.log("hello world from mern app.js ");
+// 	res.send("hellow world from response mern app.js");
+// });
+
 // middleware();
-app.get("/MernAboutus", middleware, (req, res) => {
-	console.log("hello my about from mern app...");
-	res.send("hello from about us...mern app.");
-});
 
-app.get("/", (req, res) => {
-	res.send("hello from server...");
-});
+// const middleware = (req, res, next) => {
+// 	console.log("hello  from middle ware...Mern App...");
+// 	next();
+// };
+// app.get("/MernSignup", middleware, (req, res) => {
+// 	console.log("hello world from mern app.js sign up page.");
+// 	res.send("hello from about us...mern Sign up page.");
+// });
 
-app.listen(PORT, (req, res) => {
-	console.log("server is running at port ${PORT}");
+app.listen(PORT, (err) => {
+	if (err) {
+		return console.log.error("the error is from...", err);
+	}
+	{
+		return console.log(`server is listining at port number ${PORT}`);
+	}
 });
