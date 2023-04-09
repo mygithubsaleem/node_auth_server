@@ -76,6 +76,7 @@ router.post("/MernLogin", async (req, res) => {
 		const { name, email, phone, work, passwd, cpasswd } = req.body;
 		console.log(email, passwd);
 		if (!email || !passwd) {
+			res.status(400).json({ err: "please fill empty field first..." });
 			return console.log("please fill empty field first...");
 		}
 
@@ -86,10 +87,8 @@ router.post("/MernLogin", async (req, res) => {
 		} else {
 			res.json({ err: "login failed" });
 		}
-	} catch {
-		(err) => {
-			console.log(err);
-		};
+	} catch (err) {
+		console.log(err);
 	}
 });
 
