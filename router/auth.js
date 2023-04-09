@@ -60,8 +60,8 @@ router.post("/MernSignup", async (req, res) => {
 
 		const registerUser = await user.save();
 		res.status(201).json({ message: "registration successful." });
-		console.log(`${user}   registration successful.`);
-		console.log(registerUser);
+		// console.log(`${user}   registration successful.`);
+		// console.log(registerUser);
 	} catch {
 		(error) => {
 			console.log(error);
@@ -70,5 +70,21 @@ router.post("/MernSignup", async (req, res) => {
 });
 
 // async method ends here......
+
+router.post("/MernLogin", async (req, res) => {
+	const { name, email, phone, work, passwd, cpasswd } = req.body;
+	if (!email || !passwd) {
+		return console.log("please fill empty field first...");
+	}
+	try {
+		const user = await User.findOne({ email: email });
+		if (user) {
+		}
+	} catch {
+		(err) => {
+			console.log(err);
+		};
+	}
+});
 
 module.exports = router;
