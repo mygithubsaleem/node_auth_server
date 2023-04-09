@@ -60,8 +60,8 @@ router.post("/MernSignup", async (req, res) => {
 
 		const registerUser = await user.save();
 		res.status(201).json({ message: "registration successful." });
-		// console.log(`${user}   registration successful.`);
-		// console.log(registerUser);
+		console.log(`${user}   registration successful.`);
+		console.log(registerUser);
 	} catch {
 		(error) => {
 			console.log(error);
