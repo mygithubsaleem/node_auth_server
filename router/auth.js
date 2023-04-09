@@ -72,13 +72,19 @@ router.post("/MernSignup", async (req, res) => {
 // async method ends here......
 
 router.post("/MernLogin", async (req, res) => {
-	const { name, email, phone, work, passwd, cpasswd } = req.body;
-	if (!email || !passwd) {
-		return console.log("please fill empty field first...");
-	}
 	try {
+		const { name, email, phone, work, passwd, cpasswd } = req.body;
+		console.log(email, passwd);
+		if (!email || !passwd) {
+			return console.log("please fill empty field first...");
+		}
+
 		const user = await User.findOne({ email: email });
+		console.log("user======", user);
 		if (user) {
+			res.json({ messege: "login seccessfull" });
+		} else {
+			res.json({ err: "login failed" });
 		}
 	} catch {
 		(err) => {
