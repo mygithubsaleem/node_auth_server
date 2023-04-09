@@ -56,12 +56,17 @@ router.post("/MernSignup", async (req, res) => {
 		if (emailExist) {
 			return res.status(422).json({ message: "email alredy exist." });
 		}
-		const user = new User({ name, email, phone, work, passwd, cpasswd });
+		if (passwd != cpasswd) {
+			console.log("password ansd confirm password are not same");
+		return	res.json({ err: "password and confirm password are not same" });
+		} else {
+			const user = new User({ name, email, phone, work, passwd, cpasswd });
 
-		const registerUser = await user.save();
-		res.status(201).json({ message: "registration successful." });
-		console.log(`${user}   registration successful.`);
-		console.log(registerUser);
+			const registerUser = await user.save();
+			res.status(201).json({ message: "registration successful." });
+			console.log(`${user}   registration successful.`);
+			console.log(registerUser);
+		}
 	} catch {
 		(error) => {
 			console.log(error);
