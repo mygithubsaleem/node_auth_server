@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 require("../Db/connection");
+const pwbcrypt = require("bcryptjs");
 
 const User = require("../Model/userSchema");
 
@@ -55,10 +56,9 @@ router.post("/MernSignup", async (req, res) => {
 		const emailExist = await User.findOne({ email: email });
 		if (emailExist) {
 			return res.status(422).json({ message: "email alredy exist." });
-		}
-		if (passwd != cpasswd) {
+		} else if (passwd != cpasswd) {
 			console.log("password ansd confirm password are not same");
-		return	res.json({ err: "password and confirm password are not same" });
+			return res.json({ err: "password and confirm password are not same" });
 		} else {
 			const user = new User({ name, email, phone, work, passwd, cpasswd });
 
@@ -74,26 +74,31 @@ router.post("/MernSignup", async (req, res) => {
 	}
 });
 
-// async method ends here......
+// async signup component  ends here......
 
 router.post("/MernLogin", async (req, res) => {
+	const { email, passwd } = req.body;
+
+	if (!email || !passwd) {
+		return res.status(400).json({ err: "please enter email or password first..." });
+	}
+
 	try {
-		const { name, email, phone, work, passwd, cpasswd } = req.body;
-		console.log(email, passwd);
-		if (!email || !passwd) {
-			res.status(400).json({ err: "please fill empty field first..." });
-			return console.log("please fill empty field first...");
+		const dbUser = await User.findOne({ email: email });
+		let response = null;
+		if (dbUser) {
+			const isMatchPwd = await pwbcrypt.compare(passwd, dbUser.passwd);
+			response = isMatchPwd ? "user loged in successfully" : "Invalid Password";
+		} else {
+			response = "User not found";
 		}
 
-		const user = await User.findOne({ email: email });
-		console.log("user======", user);
-		if (user) {
-			res.json({ messege: "login seccessfull" });
-		} else {
-			res.json({ err: "login failed" });
-		}
+		return res.status(200).json({ message: response });
 	} catch (err) {
-		console.log(err);
+		res
+			.status(500)
+			.json({ message: "some exception has occured during this operation", err })
+			.log(err);
 	}
 });
 
