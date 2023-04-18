@@ -5,8 +5,8 @@ dotenv.config({ path: "./config.env" });
 require("./Db/connection");
 app.use(express.json());
 //const User = require("./Model/userSchema");
-app.use(require("./Router/auth"));
 const PORT = process.env.PORT;
+app.use(require("./Router/auth"));
 
 // app.get("/", (req, res) => {
 // 	console.log("hello world from mern app.js ");
@@ -26,7 +26,7 @@ const PORT = process.env.PORT;
 
 app.listen(PORT, (err) => {
 	if (err) {
-		return console.log.error("the error is from...", err);
+		return console.log.error("the error is from...server....", err);
 	}
 	{
 		return console.log(`server is listining at port number ${PORT}`);

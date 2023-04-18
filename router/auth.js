@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 require("../Db/connection");
 const pwbcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
 const User = require("../Model/userSchema");
 
 // router.get("/", (req, res) => {
@@ -50,22 +50,22 @@ router.post("/MernSignup", async (req, res) => {
 	const { name, email, phone, work, passwd, cpasswd } = req.body;
 
 	if (!name || !email || !phone || !work || !passwd || !cpasswd) {
-		return res.json({ message: "fill the empty field please..." });
+		return res.json({ message: "fill the empty field please...from server.." });
 	}
 	try {
 		const emailExist = await User.findOne({ email: email });
 		if (emailExist) {
-			return res.status(422).json({ message: "email alredy exist." });
+			return res.status(422).json({ message: "email alredy exist...from server..." });
 		} else if (passwd != cpasswd) {
-			console.log("password ansd confirm password are not same");
-			return res.json({ err: "password and confirm password are not same" });
+			console.log("password ansd confirm password are not same ...from server...");
+			return res.json({ err: "password and confirm password are not same....from server..." });
 		} else {
-			const user = new User({ name, email, phone, work, passwd, cpasswd });
+			const newuser = new User({ name, email, phone, work, passwd, cpasswd });
 
-			const registerUser = await user.save();
-			res.status(201).json({ message: "registration successful." });
-			console.log(`${user}   registration successful.`);
-			console.log(registerUser);
+			const registerUser = await newuser.save();
+			res.status(201).json({ message: "registration successful....from server..." });
+			console.log(`${newuser}   registration successful...from server...`);
+			//console.log(registerUser);
 		}
 	} catch {
 		(error) => {
@@ -80,7 +80,7 @@ router.post("/MernLogin", async (req, res) => {
 	const { email, passwd } = req.body;
 
 	if (!email || !passwd) {
-		return res.status(400).json({ err: "please enter email or password first..." });
+		return res.status(400).json({ err: "please enter email or password first...from server...." });
 	}
 
 	try {
@@ -88,17 +88,22 @@ router.post("/MernLogin", async (req, res) => {
 		let response = null;
 		if (dbUser) {
 			const isMatchPwd = await pwbcrypt.compare(passwd, dbUser.passwd);
-			response = isMatchPwd ? "user loged in successfully" : "Invalid Password";
+			const token = await dbUser.generateAuthToken();
+			console.log(token);
+
+			response = isMatchPwd
+				? "user loged in successfully from server..."
+				: "Invalid Password from server...";
 		} else {
-			response = "User not found";
+			response = "User not found from server...";
 		}
 
 		return res.status(200).json({ message: response });
 	} catch (err) {
 		res
 			.status(500)
-			.json({ message: "some exception has occured during this operation", err })
-			.log(err);
+			.json({ message: "some exception has occured during this operation from server...", err });
+		console.log(err);
 	}
 });
 
