@@ -49,16 +49,15 @@ router.post("/MernSignup", async (req, res) => {
 
 	const { name, email, phone, work, passwd, cpasswd } = req.body;
 
-	if (!name || !email || !phone || !work || !passwd || !cpasswd) {
-		return res.json({ message: "fill the empty field please...from server.." });
-	}
+	// if (!name || !email || !phone || !work || !passwd || !cpasswd) {
+	// 	return res.json({ message: "fill the empty field please...from server.." });
+	// }
 	try {
 		const emailExist = await User.findOne({ email: email });
 		if (emailExist) {
 			return res.status(422).json({ message: "email alredy exist...from server..." });
 		} else if (passwd != cpasswd) {
-			console.log("password ansd confirm password are not same ...from server...");
-			return res.json({ err: "password and confirm password are not same....from server..." });
+			return console.log("password ansd confirm password are not same ...from server...");
 		} else {
 			const newuser = new User({ name, email, phone, work, passwd, cpasswd });
 
@@ -69,7 +68,7 @@ router.post("/MernSignup", async (req, res) => {
 		}
 	} catch {
 		(error) => {
-			console.log(error);
+			console.log("registration failed. response from server. router post failed..", error);
 		};
 	}
 });
@@ -77,13 +76,11 @@ router.post("/MernSignup", async (req, res) => {
 // async signup component  ends here......
 
 router.post("/MernLogin", async (req, res) => {
-	const { email, passwd } = req.body;
-
-	if (!email || !passwd) {
-		return res.status(400).json({ err: "please enter email or password first...from server...." });
-	}
-
 	try {
+		// const { email, passwd } = req.body;
+		const { name, email, phone, work, passwd, cpasswd } = req.body;
+
+		console.log("email, password received from front end to the server....", email, passwd);
 		const dbUser = await User.findOne({ email: email });
 		let response = null;
 		if (dbUser) {
