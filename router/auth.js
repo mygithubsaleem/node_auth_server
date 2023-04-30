@@ -45,16 +45,12 @@ const User = require("../Model/userSchema");
 // async method starts from here......
 
 router.post("/MernSignup", async (req, res) => {
-	console.log("response from server auth", req.body);
-
 	const { name, email, phone, work, passwd, cpasswd } = req.body;
 
-	// if (!name || !email || !phone || !work || !passwd || !cpasswd) {
-	// 	return res.json({ message: "fill the empty field please...from server.." });
-	// }
 	try {
 		const emailExist = await User.findOne({ email: email });
 		if (emailExist) {
+			console.log("you are already registered...server..");
 			return res.status(422).json({ message: "email alredy exist...from server..." });
 		} else if (passwd != cpasswd) {
 			return console.log("password ansd confirm password are not same ...from server...");
@@ -64,7 +60,6 @@ router.post("/MernSignup", async (req, res) => {
 			const registerUser = await newuser.save();
 			res.status(201).json({ message: "registration successful....from server..." });
 			console.log(`${newuser}   registration successful...from server...`);
-			//console.log(registerUser);
 		}
 	} catch {
 		(error) => {
@@ -77,25 +72,20 @@ router.post("/MernSignup", async (req, res) => {
 
 router.post("/MernLogin", async (req, res) => {
 	try {
-		// const { email, passwd } = req.body;
-		const { name, email, phone, work, passwd, cpasswd } = req.body;
+		const { email, passwd } = req.body;
 
-		console.log("email, password received from front end to the server....", email, passwd);
 		const dbUser = await User.findOne({ email: email });
-		let response = null;
-		if (dbUser) {
-			const isMatchPwd = await pwbcrypt.compare(passwd, dbUser.passwd);
-			const token = await dbUser.generateAuthToken();
-			console.log(token);
-
-			response = isMatchPwd
-				? "user loged in successfully from server..."
-				: "Invalid Password from server...";
+		if (!dbUser) {
+			return res.status(403).json({ message: "user not found" });
 		} else {
-			response = "User not found from server...";
+			const isMatchPwd = await pwbcrypt.compare(passwd, dbUser.passwd);
+			if (isMatchPwd) {
+				const token = await dbUser.generateAuthToken();
+				return res.status(200).json({ user: dbUser, authToken: token });
+			} else {
+				return res.status(403).json({ message: "invalid credentials" });
+			}
 		}
-
-		return res.status(200).json({ message: response });
 	} catch (err) {
 		res
 			.status(500)
